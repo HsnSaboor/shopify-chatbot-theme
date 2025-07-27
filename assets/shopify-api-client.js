@@ -86,9 +86,16 @@
     const url = `${window.ShopifyAPIEndpoints.conversations}?session_id=${encodeURIComponent(sessionData.session_id)}&t=${Date.now()}`;
     console.log('[API Client] Request URL:', url);
 
-    const conversations = await window.ShopifyRequestHandler.makeRequest(url, { method: 'GET' });
-    console.log('[API Client] Successfully fetched conversations:', conversations);
-    return conversations;
+    const result = await window.ShopifyRequestHandler.makeRequest(url);
+    console.log('[API Client] Conversations fetched successfully:', result);
+
+    // Handle CORS error case
+    if (result.error === 'CORS_ERROR') {
+      console.warn('[API Client] CORS error when fetching conversations, returning empty array');
+      return [];
+    }
+
+    return result.conversations || [];
   }
 
   async function fetchConversationHistory(conversationId) {

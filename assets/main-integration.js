@@ -41,7 +41,32 @@
     } else if (messageData.type === 'send-chat-message') {
       console.log('[Shopify Integration] Handling chat message:', messageData.payload);
       window.ShopifyWebhookHandler.sendChatMessageToWebhook(messageData);
-    } else if (messageData.type !== 'send-chat-message') {
+    } else if (messageData.type === 'get-all-conversations') {
+      console.log('[Shopify Integration] Handling get-all-conversations request');
+      if (window.ShopifyAPIClient && window.ShopifyAPIClient.fetchAllConversations) {
+        window.ShopifyAPIClient.fetchAllConversations()
+          .then(conversations => {
+            console.log('[Shopify Integration] Sending conversations response:', conversations);
+            window.ShopifyMessageHandlers.sendMessageToChatbot({
+              type: 'conversations-response',
+              conversations: conversations
+            });
+          })
+          .catch(error => {
+            console.error('[Shopify Integration] Error fetching conversations:', error);
+            window.ShopifyMessageHandlers.sendMessageToChatbot({
+              type: 'conversations-response',
+              conversations: []
+            });
+          });
+      } else {
+        console.error('[Shopify Integration] ShopifyAPIClient not available for conversations request');
+        window.ShopifyMessageHandlers.sendMessageToChatbot({
+          type: 'conversations-response',
+          conversations: []
+        });
+      }
+    } else {
       console.log('[Shopify Integration] Unknown message type:', messageData.type);
     }
   }

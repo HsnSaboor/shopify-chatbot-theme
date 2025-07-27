@@ -11,14 +11,16 @@
   function checkDependencies() {
     const requiredDependencies = [
       'ShopifySessionManager',
-      'ShopifyAPIClient',
+      'ShopifyAPIClient', 
       'ShopifyMessageHandlers',
       'ShopifyCartHandlers',
       'ShopifySessionHandlers',
       'ShopifyIframeManager',
       'ShopifyWebhookHandler',
       'ShopifyPopupManager',
-      'ShopifyInitialization'
+      'ShopifyInitialization',
+      'ShopifyRequestHandler',
+      'ShopifyAPIEndpoints'
     ];
 
     for (const dependency of requiredDependencies) {

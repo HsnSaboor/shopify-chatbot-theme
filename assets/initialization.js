@@ -57,6 +57,7 @@
     },
 
     setupMessageListener: function() {
+      const self = this;
       window.addEventListener('message', function(event) {
         console.log('[Shopify Integration] Received message from iframe:', event.data);
 
@@ -82,7 +83,15 @@
 
           case 'get-all-conversations':
             // Handle conversation list request
-            this.handleConversationsRequest(event);
+            self.handleConversationsRequest(event);
+            break;
+
+          case 'send-chat-message':
+            // Handle chat message through webhook
+            console.log('[Shopify Integration] Handling send-chat-message:', event.data.payload);
+            if (window.ShopifyWebhookHandler) {
+              window.ShopifyWebhookHandler.sendChatMessageToWebhook(event.data);
+            }
             break;
 
           case 'add-to-cart':
@@ -146,7 +155,9 @@
           typeof window.ShopifyAPIClient === 'undefined' ||
           typeof window.ShopifyMessageHandlers === 'undefined' ||
           typeof window.ShopifyCartHandlers === 'undefined' ||
-          typeof window.ShopifySessionHandlers === 'undefined') {
+          typeof window.ShopifySessionHandlers === 'undefined' ||
+          typeof window.ShopifyWebhookHandler === 'undefined' ||
+          typeof window.ShopifyIframeManager === 'undefined') {
         console.log('[Shopify Integration] Waiting for dependencies...');
         setTimeout(() => this.waitForDependencies(), 100);
         return;
