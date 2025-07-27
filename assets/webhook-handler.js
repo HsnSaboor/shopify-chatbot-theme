@@ -1,4 +1,3 @@
-
 /**
  * Webhook Handler - Handles n8n webhook communication
  */

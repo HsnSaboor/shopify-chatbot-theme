@@ -1,4 +1,3 @@
-
 /**
  * Initialization Module - Main setup and dependency management
  */
@@ -81,16 +80,18 @@
             window.ShopifySessionHandlers.sendSessionDataToChatbot();
             break;
 
-          case 'get-all-conversations':
-            // Handle conversation list request
-            self.handleConversationsRequest(event);
-            break;
-
           case 'send-chat-message':
             // Handle chat message through webhook
             console.log('[Shopify Integration] Handling send-chat-message:', event.data.payload);
             if (window.ShopifyWebhookHandler) {
               window.ShopifyWebhookHandler.sendChatMessageToWebhook(event.data);
+            }
+            break;
+
+          case 'get-all-conversations':
+            // Only handle from iframe, not duplicated from parent
+            if (event.source !== window.parent) {
+              self.handleConversationsRequest(event);
             }
             break;
 
