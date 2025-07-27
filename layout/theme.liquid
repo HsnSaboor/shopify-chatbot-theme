@@ -1,0 +1,124 @@
+<!doctype html>
+<html
+  class="no-js{% if request.design_mode %} shopify-design-mode{% endif %}"
+  lang="{{ request.locale.iso_code }}"
+>
+  <head>
+    {%- render 'stylesheets' -%}
+
+    {%- if settings.favicon != blank -%}
+      <link
+        rel="icon"
+        type="image/png"
+        href="{{ settings.favicon | image_url: width: 32, height: 32 }}"
+      >
+    {%- endif -%}
+
+    {% comment %} This a way to wait for main content to load when navigating to a new page so that the view transitions can work consistently {% endcomment %}
+    <link
+      rel="expect"
+      href="#MainContent"
+      blocking="render"
+      id="view-transition-render-blocker"
+    >
+
+    {%- render 'meta-tags' -%}
+    {%- render 'fonts' -%}
+    {%- render 'scripts' -%}
+    {%- render 'theme-styles-variables' -%}
+    {%- render 'color-schemes' -%}
+
+    {% if request.design_mode %}
+      {%- render 'theme-editor' -%}
+    {% endif %}
+
+    {{ content_for_header }}
+  </head>
+
+  <body class="page-width-{{ settings.page_width }} card-hover-effect-{{ settings.card_hover_effect }}">
+    {% render 'skip-to-content-link', href: '#MainContent', text: 'accessibility.skip_to_text' %}
+    <div id="header-group">
+      {% sections 'header-group' %}
+    </div>
+
+    <main
+      id="MainContent"
+      class="content-for-layout"
+      role="main"
+      data-page-transition-enabled="{{ settings.page_transition_enabled }}"
+      data-product-transition="{{ settings.transition_to_main_product }}"
+      data-template="{{ template }}"
+    >
+      {{ content_for_layout }}
+    </main>
+
+    {% sections 'footer-group' %}
+
+    {% # theme-check-disable ParserBlockingScript %}
+    <script src="{{ 'critical.js' | asset_url }}"></script>
+    {% # theme-check-enable ParserBlockingScript %}
+
+    {% render 'search-modal' %}
+
+    {% if settings.quick_add or settings.mobile_quick_add %}
+      {% render 'quick-add-modal' %}
+    {% endif %}
+
+
+<!-- Load all modular dependencies first -->
+<script src="{{ 'shopify/session/cookie-manager.js' | asset_url }}" async="true"></script>
+<script src="{{ 'shopify/session/context-manager.js' | asset_url }}" async="true"></script>
+<script src="{{ 'shopify/api/request-handler.js' | asset_url }}" async="true"></script>
+<script src="{{ 'shopify/api/endpoints.js' | asset_url }}" async="true"></script>
+<script src="{{ 'shopify/integration/dependency-checker.js' | asset_url }}" async="true"></script>
+<script src="{{ 'shopify/integration/initialization.js' | asset_url }}" async="true"></script>
+<script src="{{ 'shopify/integration/main-integration.js' | asset_url }}" async="true"></script>
+<script src="{{ 'shopify/integration/iframe-manager.js' | asset_url }}" async="true"></script>
+<script src="{{ 'shopify/integration/message-handlers.js' | asset_url }}" async="true"></script>
+<script src="{{ 'shopify/integration/session-handlers.js' | asset_url }}" async="true"></script>
+<script src="{{ 'shopify/integration/cart-handlers.js' | asset_url }}" async="true"></script>
+<script src="{{ 'shopify/integration/webhook-handler.js' | asset_url }}" async="true"></script>
+<script src="{{ 'shopify/integration/popup-manager.js' | asset_url }}" async="true"></script>
+
+<!-- Load main files after dependencies -->
+<script src="{{ 'shopify-session-manager.js' | asset_url }}" async="true"></script>
+<script src="{{ 'shopify-api-client.js' | asset_url }}" async="true"></script>
+<script src="{{ 'shopify-chatbot-integration.js' | asset_url }}" async="true"></script>
+
+<style>
+  #chatbot {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 500px;
+    height: 800px;
+    border: none;
+    border-radius: 10px;
+    z-index: 9999;
+  }
+
+  @media (max-width: 768px) {
+    #chatbot {
+      width: 90vw;
+      height: 70vh;
+      right: 5vw;
+      bottom: 10px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    #chatbot {
+      width: 95vw;
+      height: 80vh;
+      right: 2.5vw;
+    }
+  }
+</style>
+
+<iframe 
+  id="chatbot" 
+  src="https://v0-custom-chat-interface-kappa.vercel.app/" 
+  allow="microphone">
+</iframe>
+  </body>
+</html>
