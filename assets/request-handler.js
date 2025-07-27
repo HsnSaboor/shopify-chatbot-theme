@@ -1,4 +1,3 @@
-
 /**
  * HTTP Request Handler Module
  * Handles all HTTP requests for Shopify API client
@@ -11,13 +10,12 @@
   async function makeRequest(url, options = {}) {
     try {
       console.log('[API Client] Making request to:', url);
-      
+
       const response = await fetch(url, {
         mode: 'cors',
         credentials: 'omit',
         headers: {
           'Content-Type': 'application/json',
-          'Cache-Control': 'no-cache',
           'Accept': 'application/json',
           ...options.headers
         },
@@ -33,13 +31,13 @@
       return result;
     } catch (error) {
       console.error('[API Client] Request failed:', error);
-      
+
       // If CORS error, try to handle gracefully
       if (error.message.includes('CORS') || error.message.includes('NetworkError')) {
         console.warn('[API Client] CORS error detected, returning empty result');
         return { success: false, error: 'CORS_ERROR', data: [] };
       }
-      
+
       throw error;
     }
   }

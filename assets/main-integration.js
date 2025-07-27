@@ -1,4 +1,3 @@
-
 /**
  * Main Shopify Integration Handler
  * Handles parent window message communications
@@ -47,7 +46,26 @@
         });
       }
     } else {
-      console.log('[Shopify Integration] Unknown message type:', messageData.type);
+          switch (messageData.type) {
+          case 'get-all-conversations':
+            // Handle conversations request
+            console.log('[Shopify Integration] Handling get-all-conversations request');
+            if (window.ShopifyInitialization && window.ShopifyInitialization.handleConversationsRequest) {
+              window.ShopifyInitialization.handleConversationsRequest(event);
+            }
+            break;
+
+          case 'send-chat-message':
+            // Handle chat message through webhook
+            console.log('[Shopify Integration] Handling send-chat-message:', event.data.payload);
+            if (window.ShopifyWebhookHandler) {
+              window.ShopifyWebhookHandler.sendChatMessageToWebhook(event.data);
+            }
+            break;
+
+          default:
+            console.log('[Shopify Integration] Unknown message type:', event.data.type);
+      }
     }
   }
 
