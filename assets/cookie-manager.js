@@ -22,6 +22,17 @@
     
     const cookies = getAllCookies();
     console.log('[Session Manager] Available cookies:', Object.keys(cookies));
+    
+    // Suppress cookie domain warnings for Shopify cookies as these are expected in iframe context
+    const originalConsoleWarn = console.warn;
+    console.warn = function(...args) {
+      const message = args.join(' ');
+      if (message.includes('Cookie') && message.includes('has been rejected for invalid domain')) {
+        // Silently ignore these expected warnings
+        return;
+      }
+      originalConsoleWarn.apply(console, args);
+    };
 
     // Try multiple possible Shopify session cookies in order of preference
     const possibleSessionCookies = [

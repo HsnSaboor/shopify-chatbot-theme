@@ -49,8 +49,14 @@
 
           let data;
           try {
-            const parsedResponse = JSON.parse(responseText);
-            data = Array.isArray(parsedResponse) ? parsedResponse[0] : parsedResponse;
+            // Handle empty response
+            if (!responseText || responseText.trim() === '') {
+              console.warn('[Shopify Integration] Empty webhook response received');
+              data = { message: "I received your message. The service is processing your request." };
+            } else {
+              const parsedResponse = JSON.parse(responseText);
+              data = Array.isArray(parsedResponse) ? parsedResponse[0] : parsedResponse;
+            }
           } catch (e) {
             console.error('[Shopify Integration] Failed to parse webhook response:', e);
             data = { message: "I received your message but had trouble processing the response." };
