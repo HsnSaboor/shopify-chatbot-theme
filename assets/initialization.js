@@ -116,6 +116,14 @@
     handleConversationsRequest: function(event) {
       console.log('[Shopify Integration] Handling get-all-conversations request');
 
+      // Prevent duplicate requests
+      if (this.conversationRequestInProgress) {
+        console.log('[Shopify Integration] Conversation request already in progress, skipping');
+        return;
+      }
+
+      this.conversationRequestInProgress = true;
+
       // First try to use preloaded conversations if available
       if (window.preloadedConversations && window.preloadedConversations.length > 0) {
         console.log('[Shopify Integration] Using preloaded conversations:', window.preloadedConversations.length);
@@ -123,6 +131,8 @@
           type: 'conversations-response',
           conversations: window.preloadedConversations
         }, '*');
+          this.conversationRequestInProgress = false;
+
       } else if (window.ShopifyAPIClient) {
         // Fallback to API call
         window.ShopifyAPIClient.fetchAllConversations()
@@ -141,6 +151,12 @@
               type: 'conversations-response',
               conversations: []
             }, '*');
+          })
+          .finally(() => {
+            // Reset flag after 1 second to allow new requests
+            setTimeout(() => {
+              this.conversationRequestInProgress = false;
+            }, 1000);
           });
       } else {
         console.error('[Shopify Integration] ShopifyAPIClient not available for conversations request');
@@ -148,6 +164,8 @@
           type: 'conversations-response',
           conversations: []
         }, '*');
+              this.conversationRequestInProgress = false;
+
       }
     },
 

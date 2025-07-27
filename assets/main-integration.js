@@ -17,8 +17,8 @@
 
     const messageData = event.data;
 
-    // Only handle messages from parent window, not iframe
-    if (event.source === window.parent) {
+    // Only handle messages from iframe (child window), not from parent window to avoid duplicates
+    if (event.source === window.parent || event.source === window) {
       return; // Skip parent window messages to avoid duplicates
     }
 
